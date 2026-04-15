@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "oneOf": [
+    {
+      "properties": {
+        "action_type": { "type": "string", "enum": ["TOOL"] },
+        "tool": {
+          "type": "string",
+          "enum": ["python", "sympy", "z3", "retriever", "choice_selector"]
+        },
+        "args": { "type": "object" }
+      },
+      "required": ["action_type"],
+      "additionalProperties": true
+    },
+    {
+      "properties": {
+        "action_type": { "type": "string", "enum": ["FINAL"] },
+        "final": {
+          "type": "object",
+          "properties": {
+            "answer": { "type": "string" },
+            "reasoning_summary": { "type": "string", "maxLength": 700 }
+          },
+          "required": ["answer"]
+        }
+      },
+      "required": ["action_type"],
+      "additionalProperties": true
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "tool": {"type": "string"},
+    "ok": {"type": "boolean"},
+    "data": {"type": "object"},
+    "error": {"type": "string"},
+    "cost_tokens": {"type": "integer", "minimum": 0}
+  },
+  "required": ["tool", "ok", "cost_tokens"],
+  "additionalProperties": false
+}
