@@ -1,0 +1,31 @@
+{
+  "VerifyInput": {
+    "type": "object",
+    "properties": {
+      "problem_text": {"type": "string"},
+      "topic": {"type": "string"},
+      "parsed_constraints": {"type": "object"},
+      "candidate": {
+        "type": "object",
+        "properties": {
+          "final_answer": {"type": "string"},
+          "audit_trail": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["final_answer"]
+      }
+    },
+    "required": ["problem_text", "topic", "parsed_constraints", "candidate"]
+  },
+  "VerifyOutput": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["PASS", "FAIL", "INDETERMINATE"]
+      },
+      "violations": {"type": "array", "items": {"type": "string"}},
+      "normalized_answer": {"type": "string"}
+    },
+    "required": ["status", "violations"]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "goals": {
+      "type": "array",
+      "items": {"type": "string"},
+      "maxItems": 5,
+      "description": "List of high-level strategic goals for solving the problem"
+    }
+  },
+  "required": ["goals"],
+  "additionalProperties": false
+}
