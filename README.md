@@ -1,172 +1,200 @@
-ETHOS: Self-Refinement Agentic Framework
+# ETHOS — Self‑Refinement Agentic Reasoner
+
+<p align="center">
+  <strong>Agentic AI framework</strong> for multi‑domain reasoning (logic puzzles, spatial reasoning, math, riddles) with
+  <strong>hybrid retrieval</strong>, <strong>planning</strong>, <strong>tool use</strong>, <strong>self‑refinement</strong>, and <strong>verification</strong>.
+</p>
+
+<p align="center">
+  <a href="https://github.com/CIPHERclux/Ethos-Agentic-Reasoner"><img alt="GitHub Repo" src="https://img.shields.io/badge/repo-CIPHERclux%2FEthos--Agentic--Reasoner-181717?logo=github"></a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white">
+  <img alt="Build" src="https://img.shields.io/badge/build-manual-lightgrey">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
+  <img alt="Status" src="https://img.shields.io/badge/status-alpha-blue">
+</p>
+
+---
+
+## Why ETHOS?
+
+ETHOS is designed to be **robust under uncertainty**: it doesn’t just “answer once”—it can **critique itself** and **revise**.
+It also learns from prior work via a **skill cache** (exact match + semantic retrieval), and validates outputs with a **verifier**.
+
+---
+
+## Results (Phi‑3.5 in this architecture)
+
+A 96‑question evaluation (see `phi35_reasoning_analysis.html`) shows:
+
+- **Overall accuracy:** **67.7%** (**65 / 96** correct)
+- **Lift vs baseline Phi‑3.5 (~52%):** **+15.7 percentage points**
+- **Relative improvement:** **+30.2%**
+- **Avg reasoning steps:** **3.2** steps/solution
+
+**Strengths by category** (accuracy):
+- Logical traps: **100%** (3/3)
+- Optimization & planning: **76.2%** (16/21)
+- Classic riddles: **75.0%** (6/8)
+
+**Main weakness areas** to target next:
+- Spatial reasoning: **58.3%** (14/24)
+- Recurring failure modes: geometric miscounting, gear ratio inversion, repeated sequence mistakes
+
+---
+
+## Architecture (at a glance)
+
+```mermaid
+flowchart LR
+  A[Problem + Options] --> B[Skill Cache\nExact SHA-256 + FAISS]
+  B --> C[Planner\nGoal Decomposition]
+  C --> D[Executor\nCoT + Self-Refinement]
+  D --> E[Verifier\nNormalize + Validate]
+  E --> F[Answer - Option Index]
+
+  B -. "Exemplars - few-shot" .-> D
+  C -. Goals .-> D
+  D <-. "Tool calls" .-> T[Tool Dispatcher\nPython / SymPy / Z3 / Retriever]
+```
+
+### Self‑refinement loop
 
-A novel agentic AI system for autonomous multi-domain problem solving across spatial reasoning, logic puzzles, mathematical reasoning, and riddles.
-
-
-
-🏗️ Architecture Overview
-
-
-System Pipeline
-
-Problem + Options → Skill Cache → Planner → Executor → Verifier → Answer
-                         ↓           ↓          ↑
-                    Exemplars    Goals    Self-Refinement Loop
-                                            (Critique → Refine)
-
-                                            
-Core Components
-
-
-1.Skill Cache (Long-Term Memory)
-
--Dual-mode retrieval: SHA-256 exact matching + FAISS semantic search
-
--SQLite for metadata storage
-
--384-dim embeddings via SentenceTransformer
-
--O(1) exact lookup, efficient k-NN for similar problems
-
-
-
-2.Planner (Goal Decomposition)
-
--Generates 3-5 actionable sub-goals
-
--Leverages retrieved exemplars for few-shot learning
-
--Structured JSON output with schema validation
-
-
-
-3.Executor (Self-Refinement Engine)
-
--Chain-of-Thought (CoT) reasoning for initial solutions
-
--Critique Module identifies logical flaws and errors
-
--Refinement Loop iteratively improves solutions (max 2 iterations)
-
--Falls back to ReAct loop if refinement disabled
-
-
-
-4.Tool Dispatcher (Computational Backend)
-
--Python Tool: Sandboxed execution with AST validation
-
--SymPy Tool: Symbolic mathematics (equations, simplification)
-
--Z3 Tool: SMT constraint solving for logic problems
-
--Choice Selector: Fuzzy matching for answer normalization
-
-
-
-5.Verifier (Answer Validation)
-
--Domain-specific logic (riddles, position puzzles)
-
--Fuzzy string matching (threshold ≥ 0.70)
-
--Answer normalization to option indices
-
-
-
-6.Context Manager (Memory Optimization)
-
--Hierarchical compression: Header + Variables + Recent Steps
-
-
-
-
-🔄 Self-Refinement Workflow     
-┌─────────────────┐
-│  CoT Reasoning  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐      No Flaws
-│    Critique     │─────────────────┐
-└────────┬────────┘                 │
-         │ Found Flaws              │
-         ▼                          ▼
-┌─────────────────┐          ┌──────────┐
-│ Refine Solution │          │ Converged│
-└────────┬────────┘          └──────────┘
-         │
-         └─────────────┐
-                       ▼
-              (Repeat max 2 iterations)
-
-
-
-🚀 Key Features
-
-
-Self-Correction: Iterative critique-improve loop for error recovery
-
-Hybrid Retrieval: 35.3% exact hit rate + semantic fallback
-
-Multi-Tool Support: Python, SymPy, Z3 with robust error handling
-
-Domain-Aware: Specialized logic for different problem types
-
-Efficient Context: Compressed history within token limits
-
-Interpretability: Full audit trails for debugging
-
-
-# Core Dependencies
-
-python >= 3.8
-
-torch >= 2.0.0
-
-transformers >= 4.30.0
-
-sentence-transformers >= 2.2.0
-
-faiss-cpu >= 1.7.0  
-
-sympy >= 1.8
-
-z3-solver >= 4.8
-
-pandas
-
-numpy
-
-sqlite3
-
-
-
-🛠️ Installation
-
-For Google Colab (Recommended)
-
-1.Download the REpository
-
--download the repository as a ZIP file
-
--save it locally
-
-
-2.Open Google Collab
-
--upload the ZIP file
-
--paste code block from https://colab.research.google.com/drive/1ILqMjDTLsLlCwppsPy2KfYr1LuaetP-E?usp=sharing
-
-
-3.Start Running
-
--click on upload and upload the ZIP file
-
--then click on cancel upload
-
-
-4.Download results
-
--download the output CSV
+```mermaid
+flowchart TD
+  R[CoT Reasoning] --> K[Critique]
+  K -->|No flaws| Z[Converged]
+  K -->|Found flaws| U[Refine Solution]
+  U --> K
+```
+
+---
+
+## Repo structure
+
+```text
+.
+├─ ethos.ipynb
+├─ src/
+│  ├─ agent/        # planner, executor, llm client, schemas
+│  ├─ tools/        # python/sympy/z3/retriever/choice selector
+│  ├─ skill_cache/  # faiss + sqlite index/store
+│  ├─ verifier/     # validation + constraint parsing
+│  ├─ inference/    # batch runs + csv formatting
+│  └─ evals/        # scoring + sanity checks
+├─ data/
+│  ├─ train.csv
+│  └─ test.csv
+├─ cache/
+│  ├─ faiss/
+│  └─ sqlite/
+├─ requirements.txt
+└─ pyproject.toml
+```
+
+---
+
+## Core components
+
+### 1) Skill Cache (Long‑Term Memory)
+- **Dual‑mode retrieval**: SHA‑256 exact matching + FAISS semantic search
+- **SQLite** for metadata
+- Embeddings (SentenceTransformer)
+- Designed for fast reuse: **exact lookup** first, semantic fallback second
+
+### 2) Planner (Goal decomposition)
+- Generates up to a few short sub‑goals
+- Can inject retrieved exemplars as few‑shot context
+- Uses **JSON schema** to constrain outputs
+
+### 3) Executor (Self‑refinement engine)
+- Produces an initial solution via **stepwise reasoning**
+- Runs **critique → refine** loop (bounded iterations)
+- Can fall back to a standard **ReAct** tool loop if needed
+
+### 4) Tool Dispatcher (computational backend)
+Supports pluggable tools:
+- **python** (safe fallback for basic arithmetic)
+- **sympy** (symbolic math)
+- **z3** (constraint solving)
+- **retriever** (when configured)
+- **choice_selector** (maps computed answers back to an MCQ option)
+
+### 5) Verifier (answer validation)
+- Normalizes candidate answers
+- Validates and converts to an option index when possible
+
+---
+
+## Installation
+
+### Option A — pip
+```bash
+pip install -r requirements.txt
+```
+
+### Option B — project install
+```bash
+pip install .
+```
+
+**Python:** 3.9+ (declared in `pyproject.toml`).
+
+---
+
+## Quickstart
+
+### 1) Notebook (recommended)
+Open and run:
+- `ethos.ipynb`
+
+### 2) Batch inference
+Entry point:
+- `src/inference/run_batch.py`
+
+Output formatting helper:
+- `src/inference/format_output_csv.py`
+
+---
+
+## Example outputs (illustrative)
+
+### Example: MCQ prediction payload (typical shape)
+```json
+{
+  "selected_option": 3,
+  "solution_text": {
+    "answer": "Option 3",
+    "reasoning_steps": [
+      "Step 1: Parse the question and constraints.",
+      "Step 2: Use a tool - Python/SymPy/Z3 - if needed.",
+      "Step 3: Verify and normalize to an option index."
+    ],
+    "confidence": "medium"
+  },
+  "audit_trail": [
+    "retrieved_similar_top_sim=0.83",
+    "goals_emitted:4",
+    "cot_initial",
+    "critique_iter_1_flaws_1",
+    "refined_iter_1",
+    "cot_steps_verified",
+    "refinement_answer_extracted"
+  ]
+}
+```
+
+### Example: pipeline view
+```text
+Problem + Options
+  → Skill Cache (exact / semantic)
+  → Planner (goals)
+  → Executor (CoT → critique → refine)
+  → Verifier (normalize)
+  → Final option index
+```
+
+---
+
+## License
+
+MIT (declared in `pyproject.toml`).
