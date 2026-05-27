@@ -4,20 +4,11 @@
   <strong>Agentic AI framework</strong> for multi‑domain reasoning (logic puzzles, spatial reasoning, math, riddles) with
   <strong>hybrid retrieval</strong>, <strong>planning</strong>, <strong>tool use</strong>, <strong>self‑refinement</strong>, and <strong>verification</strong>.
 </p>
-
-<p align="center">
-  <a href="https://github.com/CIPHERclux/Ethos-Agentic-Reasoner"><img alt="GitHub Repo" src="https://img.shields.io/badge/repo-CIPHERclux%2FEthos--Agentic--Reasoner-181717?logo=github"></a>
-  <img alt="Python" src="https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white">
-  <img alt="Build" src="https://img.shields.io/badge/build-manual-lightgrey">
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
-  <img alt="Status" src="https://img.shields.io/badge/status-alpha-blue">
-</p>
-
 ---
 
-## Why ETHOS?
+## Why this Framework?
 
-ETHOS is designed to be **robust under uncertainty**: it doesn’t just “answer once”—it can **critique itself** and **revise**.
+It is designed to be **robust under uncertainty**: it doesn’t just “answer once”—it can **critique itself** and **revise**.
 It also learns from prior work via a **skill cache** (exact match + semantic retrieval), and validates outputs with a **verifier**.
 
 ---
@@ -73,7 +64,7 @@ flowchart TD
 
 ```text
 .
-├─ ethos.ipynb
+├─ multidomain-reasoner.ipynb
 ├─ src/
 │  ├─ agent/        # planner, executor, llm client, schemas
 │  ├─ tools/        # python/sympy/z3/retriever/choice selector
