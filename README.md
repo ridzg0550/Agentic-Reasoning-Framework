@@ -1,4 +1,4 @@
-# ETHOS — Self‑Refinement Agentic Reasoner
+# Agentic Reasoning Framework for Multidomain Reasoning
 
 <p align="center">
   <strong>Agentic AI framework</strong> for multi‑domain reasoning (logic puzzles, spatial reasoning, math, riddles) with
