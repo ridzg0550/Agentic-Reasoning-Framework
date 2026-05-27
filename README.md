@@ -4,7 +4,7 @@
   <strong>Agentic AI framework</strong> for multi‑domain reasoning (logic puzzles, spatial reasoning, math, riddles) with
   <strong>hybrid retrieval</strong>, <strong>planning</strong>, <strong>tool use</strong>, <strong>self‑refinement</strong>, and <strong>verification</strong>.
 </p>
----
+
 
 ## Why this Framework?
 
